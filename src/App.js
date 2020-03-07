@@ -4,12 +4,18 @@ import styled from "styled-components";
 import Checkbox from "@material-ui/core/Checkbox";
 import Pagination from "@material-ui/lab/Pagination";
 
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+
 const Flex = styled.div`
   widht: 90vw;
   // margin: 3vh auto;
   padding: 3vh 3vw 3vh 0vw;
   display: flex;
   background-color: #333333;
+  justify-content: space-between;
 `;
 
 const Stabel = styled.div`
@@ -21,12 +27,17 @@ const Stabel = styled.div`
   jusfify-content: flex-start;
   background-color: #424242;
   color: #fff;
-  margin: 20px;
+  margin: 70px;
   height: fit-content;
+  // width: 30vw;
+  // flex-bias: 20%;
 `;
 
 const Table = styled.div`
-  flex: 3;
+  // flex-bias: 80%;
+  // width: 60vw;
+  flex: 2;
+
   background-color: #424242;
   color: #fff;
 `;
@@ -101,6 +112,9 @@ export default class App extends Component {
     const selected = newData.filter(item => item.completed);
     this.setState({ data: newData, selected });
   };
+  handleSize = ({ target }) => {
+    this.setState({ pageSize: target.value });
+  };
 
   selectAll = () => {
     const isChecked = this.state.checkAll;
@@ -163,6 +177,22 @@ export default class App extends Component {
               </Row>
             ))}
           <PaginationContainer>
+            <FormControl variant="outlined">
+              <InputLabel id="demo-simple-select-outlined-label">
+                Page Size
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-outlined-label"
+                id="demo-simple-select-outlined"
+                value={pageSize}
+                onChange={this.handleSize}
+                // labelWidth="40px"
+              >
+                <MenuItem value={10}>10</MenuItem>
+                <MenuItem value={20}>20</MenuItem>
+                <MenuItem value={30}>30</MenuItem>
+              </Select>
+            </FormControl>
             <Pagination
               count={Math.ceil(data.length / pageSize)}
               defaultPage={page}

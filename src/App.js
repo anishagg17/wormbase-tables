@@ -91,13 +91,15 @@ export default class App extends Component {
   };
 
   componentDidMount = () => {
-    Axios.get("https://jsonplaceholder.typicode.com/todos").then(({ data }) => {
-      this.setState({ data, loading: false });
+    Axios.get("https://jsonplaceholder.typicode.com/todos")
+      .then(({ data }) => {
+        this.setState({ data, loading: false });
 
-      const selected = data.filter(item => item.completed);
-      this.setState({ selected });
-      // console.log("data", data);
-    });
+        const selected = data.filter(item => item.completed);
+        this.setState({ selected });
+        console.log("data", data);
+      })
+      .catch(error => console.log("error", error));
   };
   handlePage = (event, value) => {
     this.setState({ page: value });

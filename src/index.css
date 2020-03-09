@@ -13,9 +13,19 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-
+#filled-basic{
+  margin-left: auto;
+}
+#filled-basic-label{
+  color: white !important;
+}
  *{
    margin: 0px;
    box-sizing: border-box;
    padding: 0px;
+ }
+
+ .float-right{ 
+    margin-left: auto;
+
  }

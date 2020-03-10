@@ -8,11 +8,12 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
-import TextField from "@material-ui/core/TextField";
+import _TextField from "@material-ui/core/TextField";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import sortFun from "./utils/sortFun";
+import showFullDetails from "./utils/showFullDetails";
 
 const Flex = styled.div`
   widht: 90vw;
@@ -21,6 +22,11 @@ const Flex = styled.div`
   display: flex;
   background-color: #333333;
   justify-content: space-between;
+`;
+const TextField = styled(_TextField)`
+  * {
+    color: white !important;
+  }
 `;
 
 const Stabel = styled.div`
@@ -69,10 +75,22 @@ const Row = styled.div`
   letter-spacing: 0.01071em;
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
   padding: 10px;
+  button {
+    margin-left: auto;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    color: white;
+    :focus {
+      outline: none;
+      border: none;
+    }
+  }
 `;
 
 const Id = styled.div`
   margin: 0px 2vw;
+  width: 25%;
 `;
 
 const Desc = styled.div``;
@@ -91,33 +109,53 @@ export default class App extends Component {
   };
 
   componentDidMount = () => {
-    Axios.get("https://jsonplaceholder.typicode.com/todos")
+    Axios.get(
+      "https://cors-anywhere.herokuapp.com/http://rest.wormbase.org/rest/widget/gene/WBGene00000912/expression",
+    )
       .then(({ data }) => {
-        this.setState({ data, loading: false });
-
-        const selected = data.filter(item => item.completed);
-        this.setState({ selected });
-        console.log("data", data);
+        const { fields } = data;
+        const { expressed_in } = fields;
+        let { data: dsa } = expressed_in;
+        // const selected = data.filter(item => item.completed);
+        dsa = dsa.map(item => ({ ...item, completed: false, expanded: false }));
+        this.setState({ data: dsa, loading: false });
+        // console.log("data", dsa[1]);
       })
       .catch(error => console.log("error", error));
+    // Axios.get("https://jsonplaceholder.typicode.com/todos")
+    //   .then(({ data }) => {
+    //     this.setState({ data, loading: false });
+
+    //     const selected = data.filter(item => item.completed);
+    //     this.setState({ selected });
+    //     console.log("data", data);
+    //   })
+    //   .catch(error => console.log("error", error));
   };
   handlePage = (event, value) => {
     this.setState({ page: value });
   };
 
   handleChange = id => {
-    const { data } = this.state;
-    let newData = [...data];
-    for (let i in newData) {
-      if (newData[i].id === id) {
-        newData[i] = {
-          ...newData[i],
-          completed: !newData[i].completed,
-        };
+    let data = [...this.state.data];
+    for (let i = 0; i < data.length; i++) {
+      const { ontology_term } = data[i];
+      if (ontology_term.id === id) {
+        data[i] = { ...data[i], completed: !data[i].completed };
       }
     }
-    const selected = newData.filter(item => item.completed);
-    this.setState({ data: newData, selected });
+    const selected = data.filter(item => item.completed);
+    this.setState({ data, selected });
+  };
+  handleExpand = id => {
+    let data = [...this.state.data];
+    for (let i = 0; i < data.length; i++) {
+      const { ontology_term } = data[i];
+      if (ontology_term.id === id) {
+        data[i] = { ...data[i], expanded: !data[i].expanded };
+      }
+    }
+    this.setState({ data });
   };
   handleSize = ({ target: { value } }) => {
     this.setState({ pageSize: value });
@@ -139,7 +177,6 @@ export default class App extends Component {
     const val = e.target.value;
     this.setState({ query: val });
   };
-
   downloadFile = async () => {
     const { selected } = this.state;
     const fileName = "file";
@@ -167,8 +204,12 @@ export default class App extends Component {
 
     const selected = [...this.state.selected];
     let data = [...this.state.data]
-      .filter(({ title }) => title.includes(query))
-      .sort(({ title: a }, { title: b }) => sortFun(a, b, sort));
+      .filter(({ ontology_term: { label } }) =>
+        label.toLowerCase().includes(query.toLowerCase()),
+      )
+      .sort(({ ontology_term: a }, { ontology_term: b }) =>
+        sortFun(a.label.toLowerCase(), b.label.toLowerCase(), sort),
+      );
     if (query === "") data = data.splice((page - 1) * pageSize, pageSize);
 
     return (
@@ -179,23 +220,29 @@ export default class App extends Component {
           ) : (
             <>
               <Row style={{ textAlign: "center" }}>
-                <>Download Selected</> &nbsp;
+                <>Download Selected</> &nbsp;&nbsp;&nbsp;
                 <GetAppIcon onClick={this.downloadFile} />
               </Row>
-              {selected
-                .splice(0, showSelected)
-                .map(({ id, title, completed }) => (
-                  <Row key={id}>
-                    <Checkbox
-                      checked={completed}
-                      onChange={() => this.handleChange(id)}
-                      value="primary"
-                      color="primary"
-                      inputProps={{ "aria-label": "primary checkbox" }}
-                    />
-                    <Desc>{title}</Desc>
-                  </Row>
-                ))}
+              {selected.length > 0 ? (
+                <>
+                  {selected
+                    .splice(0, showSelected)
+                    .map(({ ontology_term, details, completed }) => (
+                      <Row key={ontology_term.id}>
+                        <Checkbox
+                          checked={completed}
+                          onChange={() => this.handleChange(ontology_term.id)}
+                          value="primary"
+                          color="primary"
+                          inputProps={{ "aria-label": "primary checkbox" }}
+                        />
+                        <Desc>{ontology_term.label}</Desc>
+                      </Row>
+                    ))}
+                </>
+              ) : (
+                <Row>No entries selected</Row>
+              )}
             </>
           )}
         </Stabel>
@@ -224,21 +271,27 @@ export default class App extends Component {
           {loading ? (
             <TableSkeleton no={35} />
           ) : (
-            data.map(({ id, title, completed }) => (
-              <Row key={id}>
+            data.map(({ ontology_term, details, completed, expanded }) => (
+              <Row key={ontology_term.id}>
                 <Checkbox
                   checked={completed}
-                  onChange={() => this.handleChange(id)}
+                  onChange={() => this.handleChange(ontology_term.id)}
                   value="primary"
                   color="primary"
                   inputProps={{ "aria-label": "primary checkbox" }}
                 />
-                <Id>{id}</Id>
-                <Desc>{title}</Desc>
+                <Id>{ontology_term.label}</Id>
+                <Desc>
+                  <>{details[0] && details[0].text && details[0].text.label}</>
+                  <>{expanded && showFullDetails(ontology_term, details)}</>
+                </Desc>
+                <button onClick={() => this.handleExpand(ontology_term.id)}>
+                  {expanded ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+                </button>
               </Row>
             ))
           )}
-          {query == "" && (
+          {query === "" && (
             <PaginationContainer>
               <FormControl variant="outlined">
                 <InputLabel id="demo-simple-select-outlined-label">

@@ -8,98 +8,27 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
-import _TextField from "@material-ui/core/TextField";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import sortFun from "./utils/sortFun";
 import showFullDetails from "./utils/showFullDetails";
+
 import {
+  Flex,
+  Stabel,
+  Row,
+  Id,
+  Desc,
+  Table,
+  PaginationContainer,
+  TextField,
+  ShareRow,
   WhatsappShareButton,
   WhatsappIcon,
   LinkedinShareButton,
   LinkedinIcon,
-} from "react-share";
-
-const Flex = styled.div`
-  widht: 90vw;
-  // margin: 3vh auto;
-  padding: 3vh 3vw 3vh 0vw;
-  display: flex;
-  background-color: #333333;
-  justify-content: space-between;
-`;
-const TextField = styled(_TextField)`
-  * {
-    color: white !important;
-  }
-`;
-
-const Stabel = styled.div`
-  flex: 1;
-  // padding: 5vw 50%;
-  display: flex;
-  flex-flow: column;
-  align-items: flex-start;
-  jusfify-content: flex-start;
-  background-color: #424242;
-  color: #fff;
-  margin: 70px;
-  height: fit-content;
-  // width: 30vw;
-  // flex-bias: 20%;
-`;
-
-const Table = styled.div`
-  // flex-bias: 80%;
-  // width: 60vw;
-  flex: 2;
-
-  background-color: #424242;
-  color: #fff;
-`;
-
-const PaginationContainer = styled.div`
-  // color: #fff;
-  color: white;
-  * {
-    color: white !important;
-  }
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 10px;
-  height: 8vh;
-  border-bottom: 1px solid rgba(81, 81, 81, 1);
-`;
-
-const Row = styled.div`
-  display: flex;
-  align-items: center;
-  // border: 1px solid #333;
-  border-bottom: 1px solid rgba(81, 81, 81, 1);
-  letter-spacing: 0.01071em;
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-  padding: 10px;
-  button {
-    margin-left: auto;
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-    color: white;
-    :focus {
-      outline: none;
-      border: none;
-    }
-  }
-`;
-
-const Id = styled.div`
-  margin: 0px 2vw;
-  width: 25%;
-`;
-
-const Desc = styled.div``;
+} from "./components/custom";
 
 export default class App extends Component {
   state = {
@@ -232,7 +161,7 @@ export default class App extends Component {
             <TableSkeleton no={20} />
           ) : (
             <>
-              <Row style={{ textAlign: "center", width: "100%" }}>
+              <ShareRow style={{ width: "100%" }}>
                 <>Download Selected</> &nbsp;&nbsp;&nbsp;
                 <GetAppIcon onClick={this.downloadFile} />
                 <WhatsappShareButton url={shareUrl} title={"wormbase data\n\n"}>
@@ -241,7 +170,7 @@ export default class App extends Component {
                 <LinkedinShareButton url={shareUrl} title={"wormbase data\n\n"}>
                   <LinkedinIcon size={22} />
                 </LinkedinShareButton>
-              </Row>
+              </ShareRow>
               {selected.length > 0 ? (
                 <>
                   {selected

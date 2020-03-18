@@ -236,10 +236,10 @@ export default class App extends Component {
                 <>Download Selected</> &nbsp;&nbsp;&nbsp;
                 <GetAppIcon onClick={this.downloadFile} />
                 <WhatsappShareButton url={shareUrl} title={"wormbase data\n\n"}>
-                  <WhatsappIcon size={26} />
+                  <WhatsappIcon size={22} />
                 </WhatsappShareButton>
                 <LinkedinShareButton url={shareUrl} title={"wormbase data\n\n"}>
-                  <LinkedinIcon size={26} />
+                  <LinkedinIcon size={22} />
                 </LinkedinShareButton>
               </Row>
               {selected.length > 0 ? (

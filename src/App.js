@@ -14,6 +14,12 @@ import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import sortFun from "./utils/sortFun";
 import showFullDetails from "./utils/showFullDetails";
+import {
+  WhatsappShareButton,
+  WhatsappIcon,
+  LinkedinShareButton,
+  LinkedinIcon,
+} from "react-share";
 
 const Flex = styled.div`
   widht: 90vw;
@@ -191,6 +197,12 @@ export default class App extends Component {
     document.body.removeChild(link);
   };
 
+  shareData = () => {
+    const { selected } = this.state;
+    const json = JSON.stringify({ data: selected });
+    return json;
+  };
+
   render() {
     const {
       page,
@@ -201,6 +213,7 @@ export default class App extends Component {
       query,
       sort,
     } = this.state;
+    const shareUrl = this.shareData();
 
     const selected = [...this.state.selected];
     let data = [...this.state.data]
@@ -219,9 +232,15 @@ export default class App extends Component {
             <TableSkeleton no={20} />
           ) : (
             <>
-              <Row style={{ textAlign: "center" }}>
+              <Row style={{ textAlign: "center", width: "100%" }}>
                 <>Download Selected</> &nbsp;&nbsp;&nbsp;
                 <GetAppIcon onClick={this.downloadFile} />
+                <WhatsappShareButton url={shareUrl} title={"wormbase data\n\n"}>
+                  <WhatsappIcon size={26} />
+                </WhatsappShareButton>
+                <LinkedinShareButton url={shareUrl} title={"wormbase data\n\n"}>
+                  <LinkedinIcon size={26} />
+                </LinkedinShareButton>
               </Row>
               {selected.length > 0 ? (
                 <>
